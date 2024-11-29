@@ -1,0 +1,14 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model ViewCount {
+  id    Int @id @default(autoincrement())
+  count Int @default(0)
+}
+
