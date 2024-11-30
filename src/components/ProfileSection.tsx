@@ -1,12 +1,13 @@
 import Image from "next/image";
 import TypewriterEffect from "./TypewriterEffect";
 import SocialButton from "./SocialButton";
-import { Twitch, Youtube, Gamepad2Icon as GamepadTwo } from "lucide-react";
 
 export default function ProfileSection({
   isDarkMode,
+  profile,
 }: {
   isDarkMode: boolean;
+  profile: any;
 }) {
   const textColor = isDarkMode ? "text-white" : "text-gray-900";
   const cardBg = isDarkMode ? "bg-[#150027]/40" : "bg-white/70";
@@ -23,8 +24,8 @@ export default function ProfileSection({
           ></div>
           <div className="relative w-24 h-24 rounded-full overflow-hidden ring-2 ring-white/20">
             <img
-              src="https://avatars.githubusercontent.com/u/169302941?v=4"
-              alt="Nuiqka"
+              src={profile.avatar || "/placeholder.svg?height=96&width=96"}
+              alt={`${profile.username}'s Avatar`}
               width={96}
               height={96}
               className="object-cover"
@@ -38,33 +39,21 @@ export default function ProfileSection({
             Nuiqka
           </h1>
           <TypewriterEffect
-            text="Hello i'm your futur babe, or just Nuiqka."
+            text={profile.bio || "Hello, I'm a bio links user!"}
             className={`${
               isDarkMode ? "text-gray-400" : "text-gray-600"
             } text-sm transition-colors duration-300`}
           />
         </div>
         <div className="flex items-center justify-center gap-4">
-          <SocialButton
-            href="#"
-            icon={<Twitch className="w-5 h-5" />}
-            isDarkMode={isDarkMode}
-          />
-          <SocialButton
-            href="#"
-            icon={<Youtube className="w-5 h-5" />}
-            isDarkMode={isDarkMode}
-          />
-          <SocialButton
-            href="#"
-            icon={<GamepadTwo className="w-5 h-5" />}
-            isDarkMode={isDarkMode}
-          />
-          <SocialButton
-            href="#"
-            icon={<GamepadTwo className="w-5 h-5" />}
-            isDarkMode={isDarkMode}
-          />
+          {/**profile.socialLinks.map((link: any) => (
+            <SocialButton
+              key={link.id}
+              href={link.url}
+              platform={link.platform}
+              isDarkMode={isDarkMode}
+            />
+          ))**/}
         </div>
       </div>
     </div>

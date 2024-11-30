@@ -1,10 +1,39 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { getLanyardData } from "@/services/lanyardService";
 
-export default function DiscordCard({ isDarkMode }: { isDarkMode: boolean }) {
+export default function DiscordCard({
+  isDarkMode,
+  discordId,
+}: {
+  isDarkMode: boolean;
+  discordId: string;
+}) {
+  const [discordData, setDiscordData] = useState<any>(null);
   const textColor = isDarkMode ? "text-white" : "text-gray-900";
   const cardBg = isDarkMode ? "bg-[#150027]/40" : "bg-white/70";
   const cardBorder = isDarkMode ? "border-white/10" : "border-gray-200";
+
+  useEffect(() => {
+    const fetchDiscordData = async () => {
+      try {
+        const data = await getLanyardData(discordId);
+        setDiscordData(data);
+      } catch (error) {
+        console.error("Failed to fetch Discord data:", error);
+      }
+    };
+
+    fetchDiscordData();
+    const interval = setInterval(fetchDiscordData, 60000); // Refresh every minute
+
+    return () => clearInterval(interval);
+  }, [discordId]);
+
+  if (!discordData) return null;
 
   return (
     <div
@@ -14,7 +43,7 @@ export default function DiscordCard({ isDarkMode }: { isDarkMode: boolean }) {
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-xl overflow-hidden">
             <img
-              src="https://avatars.githubusercontent.com/u/169302941?v=4"
+              src={`https://cdn.discordapp.com/avatars/${discordId}/${discordData.discord_user.avatar}.png`}
               alt="Discord Avatar"
               width={48}
               height={48}
@@ -23,9 +52,11 @@ export default function DiscordCard({ isDarkMode }: { isDarkMode: boolean }) {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className={textColor}>@nuiqka</span>
+              <span className={textColor}>
+                @{discordData.discord_user.username}
+              </span>
               <span className="text-xs bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-full">
-                ✓
+                {discordData.discord_status}
               </span>
             </div>
             <p
@@ -33,7 +64,7 @@ export default function DiscordCard({ isDarkMode }: { isDarkMode: boolean }) {
                 isDarkMode ? "text-gray-400" : "text-gray-600"
               }`}
             >
-              Nothing is the real Truth.
+              {discordData.activities[0]?.state || "No current activity"}
             </p>
           </div>
         </div>

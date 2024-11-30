@@ -1,15 +1,34 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import {
+  Twitch,
+  Youtube,
+  Twitter,
+  Instagram,
+  Linkedin,
+  Github,
+} from "lucide-react";
+
+const platformIcons: { [key: string]: React.ElementType } = {
+  twitch: Twitch,
+  youtube: Youtube,
+  twitter: Twitter,
+  instagram: Instagram,
+  linkedin: Linkedin,
+  github: Github,
+};
 
 export default function SocialButton({
   href,
-  icon,
+  platform,
   isDarkMode,
 }: {
   href: string;
-  icon: React.ReactNode;
+  platform: string;
   isDarkMode: boolean;
 }) {
+  const Icon = platformIcons[platform.toLowerCase()] || Github;
+
   return (
     <Link href={href}>
       <Button
@@ -21,7 +40,7 @@ export default function SocialButton({
             : "bg-gray-100 border-gray-200 hover:bg-gray-200 text-gray-800"
         } transition-colors duration-300`}
       >
-        {icon}
+        <Icon className="w-5 h-5" />
       </Button>
     </Link>
   );
