@@ -10,9 +10,9 @@ export default function Footer({ isDarkMode }: FooterProps) {
 
   return (
     <footer className={`mt-8 text-center ${textColor} text-sm`}>
-      <p>{currentYear} &copy; Nuiqka. All rights reserved.</p>
+      <p>&copy; {currentYear} Nuiqka. All rights reserved.</p>
       <p className="mt-2">
-        <small>Created with v0 | Next.js | React | Tailwind CSS | Prisma</small>
+        Created with v0 | Next.js | React | Tailwind CSS | Prisma
       </p>
       <Link
         href="/admin"

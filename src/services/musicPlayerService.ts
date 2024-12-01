@@ -1,5 +1,4 @@
-{
-  /**import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import SpotifyWebApi from "spotify-web-api-node";
 
 const spotifyApi = new SpotifyWebApi({
@@ -8,15 +7,32 @@ const spotifyApi = new SpotifyWebApi({
   redirectUri: process.env.SPOTIFY_REDIRECT_URI,
 });
 
-async function refreshAccessToken() {
+async function refreshAccessToken(profileId: string) {
+  const profile = await prisma.profile.findUnique({ where: { id: profileId } });
+  if (!profile || !profile.spotifyRefreshToken) {
+    throw new Error("No Spotify refresh token found");
+  }
+
+  spotifyApi.setRefreshToken(profile.spotifyRefreshToken);
   const data = await spotifyApi.refreshAccessToken();
+
+  await prisma.profile.update({
+    where: { id: profileId },
+    data: { spotifyAccessToken: data.body["access_token"] },
+  });
+
   spotifyApi.setAccessToken(data.body["access_token"]);
 }
 
-export async function getCurrentTrack() {
+export async function getCurrentTrack(profileId: string) {
+  const profile = await prisma.profile.findUnique({ where: { id: profileId } });
+  if (!profile || !profile.isSpotifyEnabled) {
+    return null;
+  }
+
   try {
-    await refreshAccessToken();
-    const data = await spotifyApi.getMyCurrentPlayingTrack();
+    await refreshAccessToken(profileId);
+    const data = await spotifyApi.getMyCurrentPlaybackState();
 
     if (data.body && data.body.is_playing && data.body.item) {
       const track = data.body.item;
@@ -36,18 +52,26 @@ export async function getCurrentTrack() {
   }
 }
 
-export async function getDefaultTrack() {
-  const defaultTrack = await prisma.musicPlayer.findFirst();
-  if (defaultTrack) {
+export async function getDefaultTrack(profileId: string) {
+  const musicPlayer = await prisma.musicPlayer.findUnique({
+    where: { profileId },
+  });
+  if (musicPlayer) {
     return {
-      name: defaultTrack.trackName,
-      artist: defaultTrack.artistName,
-      album: defaultTrack.albumName,
-      albumArt: defaultTrack.albumArt,
+      name: musicPlayer.trackName,
+      artist: musicPlayer.artistName,
+      album: musicPlayer.albumName,
+      albumArt: musicPlayer.albumArt,
       isCurrentlyPlaying: false,
     };
   }
   return null;
 }
-*/
+
+export async function updateDefaultTrack(profileId: string, data: any) {
+  return prisma.musicPlayer.upsert({
+    where: { profileId },
+    update: data,
+    create: { ...data, profileId },
+  });
 }

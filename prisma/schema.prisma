@@ -7,28 +7,36 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-model Admin {
+model User {
   id        Int      @id @default(autoincrement())
   username  String   @unique
   password  String
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@map("admins")
+  isAdmin   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  profile   Profile?
 }
 
 model Profile {
-  id          Int      @id @default(autoincrement())
-  username    String?  @db.Text
-  avatar      String?
-  banner      String?
-  bio         String?  @db.Text
-  discordId   String?  @map("discord_id")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-
-  @@map("profile")
+  id                  String       @id @default(uuid())
+  avatar              String?
+  banner              String?
+  bio                 String?      @db.Text
+  discordId           String?
+  isDiscordEnabled    Boolean      @default(false)
+  isSpotifyEnabled    Boolean      @default(false)
+  spotifyAccessToken  String?
+  spotifyRefreshToken String?
+  isPublic            Boolean      @default(false)
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  user                User         @relation(fields: [userId], references: [id])
+  userId              Int          @unique
+  socialLinks         SocialLink[]
+  customLinks         CustomLink[]
+  musicPlayer         MusicPlayer?
+  uniqueViews         UniqueView[]
+  totalViews          TotalView[]
 }
 
 model SocialLink {
@@ -36,49 +44,52 @@ model SocialLink {
   platform  String
   icon      String
   url       String
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@map("social_links")
+  profileId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  profile   Profile  @relation(fields: [profileId], references: [id])
 }
 
 model CustomLink {
   id        Int      @id @default(autoincrement())
   title     String
   url       String
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@map("custom_links")
+  profileId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  profile   Profile  @relation(fields: [profileId], references: [id])
 }
 
 model MusicPlayer {
-  id        Int      @id @default(autoincrement())
-  trackName String
+  id         Int      @id @default(autoincrement())
+  trackName  String
   artistName String
-  albumName String
-  albumArt  String
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@map("music_player")
+  albumName  String
+  albumArt   String
+  spotifyId  String?
+  profileId  String   @unique
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  profile    Profile  @relation(fields: [profileId], references: [id])
 }
 
 model UniqueView {
   id        Int      @id @default(autoincrement())
-  ipAddress String   @map("ip_address")
-  userId    String   @unique @map("user_id")
-  createdAt DateTime @default(now()) @map("created_at")
+  ipAddress String
+  userId    String
+  profileId String
+  createdAt DateTime @default(now())
+  profile   Profile  @relation(fields: [profileId], references: [id])
 
-  @@map("unique_views")
+  @@unique([ipAddress, profileId])
 }
 
 model TotalView {
   id        Int      @id @default(autoincrement())
-  ipAddress String   @map("ip_address")
-  userId    String   @map("user_id")
-  createdAt DateTime @default(now()) @map("created_at")
-
-  @@map("total_views")
+  ipAddress String
+  userId    String
+  profileId String
+  createdAt DateTime @default(now())
+  profile   Profile  @relation(fields: [profileId], references: [id])
 }
 

@@ -1,13 +1,17 @@
-import { prisma } from "@/lib/prisma";
+import { PrismaClient } from "@prisma/client";
 
-export async function getProfile() {
-  return prisma.profile.findFirst();
-}
+const prisma = new PrismaClient();
 
-export async function updateProfile(data: any) {
-  return prisma.profile.upsert({
-    where: { id: 1 },
-    update: data,
-    create: data,
+export async function getProfile(profileId: string) {
+  if (!profileId) {
+    throw new Error("Profile ID is required");
+  }
+  return prisma.profile.findUnique({
+    where: { id: profileId },
+    include: {
+      socialLinks: true,
+      customLinks: true,
+      musicPlayer: true,
+    },
   });
 }

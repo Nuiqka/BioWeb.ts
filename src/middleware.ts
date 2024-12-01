@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
 
-export function middleware(request: NextRequest) {
-  const isLoggedIn = request.cookies.get("auth");
+export async function middleware(request: NextRequest) {
+  const token = await getToken({ req: request });
 
-  if (!isLoggedIn && request.nextUrl.pathname.startsWith("/admin")) {
+  if (!token && request.nextUrl.pathname.startsWith("/dashboard")) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
@@ -12,5 +13,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: "/admin/:path*",
+  matcher: ["/dashboard/:path*"],
 };

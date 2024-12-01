@@ -23,9 +23,9 @@ export default function ProfileSection({
             className={`absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur-lg opacity-70 animate-pulse`}
           ></div>
           <div className="relative w-24 h-24 rounded-full overflow-hidden ring-2 ring-white/20">
-            <img
+            <Image
               src={profile.avatar || "/placeholder.svg?height=96&width=96"}
-              alt={`${profile.username}'s Avatar`}
+              alt={profile.user.username}
               width={96}
               height={96}
               className="object-cover"
@@ -36,7 +36,7 @@ export default function ProfileSection({
           <h1
             className={`text-2xl font-bold ${textColor} mb-2 transition-colors duration-300`}
           >
-            Nuiqka
+            {profile.user.username}
           </h1>
           <TypewriterEffect
             text={profile.bio || "Hello, I'm a bio links user!"}
@@ -46,14 +46,14 @@ export default function ProfileSection({
           />
         </div>
         <div className="flex items-center justify-center gap-4">
-          {/**profile.socialLinks.map((link: any) => (
+          {profile.socialLinks.map((link: any) => (
             <SocialButton
               key={link.id}
               href={link.url}
               platform={link.platform}
               isDarkMode={isDarkMode}
             />
-          ))**/}
+          ))}
         </div>
       </div>
     </div>

@@ -42,7 +42,7 @@ export default function DiscordCard({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-xl overflow-hidden">
-            <img
+            <Image
               src={`https://cdn.discordapp.com/avatars/${discordId}/${discordData.discord_user.avatar}.png`}
               alt="Discord Avatar"
               width={48}

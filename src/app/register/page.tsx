@@ -1,24 +1,26 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export default function Register() {
   const [error, setError] = useState("");
-  const [isDevMode, setIsDevMode] = useState(false);
+  const [isPublicMode, setIsPublicMode] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    // Vérifier si nous sommes en mode développement
-    setIsDevMode(process.env.NODE_ENV === "development");
+    // Fetch current mode (public/private)
+    fetch("/api/public/mode")
+      .then((res) => res.json())
+      .then((data) => setIsPublicMode(data.isPublic));
   }, []);
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!isDevMode) {
-      setError("Registration is only available in development mode.");
+    if (!isPublicMode) {
+      setError("Registration is currently disabled.");
       return;
     }
 
@@ -27,7 +29,7 @@ export default function Register() {
     const password = formData.get("password") as string;
 
     try {
-      const response = await fetch("/api/register", {
+      const response = await fetch("/api/public/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
@@ -44,14 +46,12 @@ export default function Register() {
     }
   };
 
-  if (!isDevMode) {
+  if (!isPublicMode) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <div className="bg-white p-8 rounded-lg shadow-md w-96">
           <h1 className="text-2xl font-bold mb-6">Registration Unavailable</h1>
-          <p className="text-red-500">
-            Registration is only available in development mode.
-          </p>
+          <p className="text-red-500">Registration is currently disabled.</p>
         </div>
       </div>
     );

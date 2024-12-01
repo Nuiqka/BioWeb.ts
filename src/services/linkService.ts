@@ -1,19 +1,19 @@
 import { prisma } from "@/lib/prisma";
 
-export async function getSocialLinks() {
-  return prisma.socialLink.findMany();
+export async function getSocialLinks(profileId: string) {
+  return prisma.socialLink.findMany({ where: { profileId } });
 }
 
-export async function getCustomLinks() {
-  return prisma.customLink.findMany();
+export async function getCustomLinks(profileId: string) {
+  return prisma.customLink.findMany({ where: { profileId } });
 }
 
-export async function createSocialLink(data: any) {
-  return prisma.socialLink.create({ data });
+export async function createSocialLink(profileId: string, data: any) {
+  return prisma.socialLink.create({ data: { ...data, profileId } });
 }
 
-export async function createCustomLink(data: any) {
-  return prisma.customLink.create({ data });
+export async function createCustomLink(profileId: string, data: any) {
+  return prisma.customLink.create({ data: { ...data, profileId } });
 }
 
 export async function updateSocialLink(id: number, data: any) {

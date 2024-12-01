@@ -3,14 +3,6 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
 
 export async function POST(request: Request) {
-  // Vérifier si nous sommes en mode développement
-  if (process.env.NODE_ENV !== "development") {
-    return NextResponse.json(
-      { message: "Registration is only available in development mode." },
-      { status: 403 }
-    );
-  }
-
   const { username, password } = await request.json();
 
   try {

@@ -8,7 +8,7 @@ export async function POST(request: Request) {
   const isValid = await verifyAdmin(username, password);
 
   if (isValid) {
-    (await cookies()).set("auth", "true", {
+    cookies().set("auth", "true", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
